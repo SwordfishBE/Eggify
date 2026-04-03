@@ -24,7 +24,7 @@ Examples:
 - Variant preservation for many mobs
 - Spawn egg tooltip details such as age, color, biome, profession, coat, personality or type
 
---
+---
  
 ## 🎮 Commands
 
