@@ -78,23 +78,22 @@ public final class EggifyMobHandler {
             return false;
         }
 
-        SpawnEggItem spawnEggItem = SpawnEggItem.byId(mob.getType());
-        if (spawnEggItem == null) {
-            return false;
-        }
-
-        double chance = config.dropChancePercent / 100.0D;
-        if (serverLevel.random.nextDouble() > chance) {
-            return false;
-        }
-
-        ItemStack drop = createSpawnEggDrop(mob, spawnEggItem);
+        ItemStack drop = SpawnEggItem.byId(mob.getType())
+            .map(holder -> new ItemStack(holder.value()))
+            .orElse(ItemStack.EMPTY);
         if (drop.isEmpty()) {
             return false;
         }
 
+        double chance = config.dropChancePercent / 100.0D;
+        if (serverLevel.getRandom().nextDouble() > chance) {
+            return false;
+        }
+
+        drop = createSpawnEggDrop(mob, drop);
+
         serverLevel.sendParticles(ParticleTypes.PORTAL, mob.getX(), mob.getY(0.5D), mob.getZ(), 32, 0.4D, 0.8D, 0.4D, 0.2D);
-        serverLevel.playSound(null, mob.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS, 0.9F, 0.9F + serverLevel.random.nextFloat() * 0.2F);
+        serverLevel.playSound(null, mob.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS, 0.9F, 0.9F + serverLevel.getRandom().nextFloat() * 0.2F);
         mob.spawnAtLocation(serverLevel, drop);
         mob.discard();
         EggifyMod.LOGGER.debug("{} {} eggified {}", EggifyMod.LOG_PREFIX, player.getName().getString(), BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()));
@@ -105,8 +104,7 @@ public final class EggifyMobHandler {
         return config.blacklistedMobs.contains(BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()).toString());
     }
 
-    private static ItemStack createSpawnEggDrop(Mob mob, SpawnEggItem spawnEggItem) {
-        ItemStack stack = new ItemStack(spawnEggItem);
+    private static ItemStack createSpawnEggDrop(Mob mob, ItemStack stack) {
         CompoundTag entityTag = null;
         if (mob.getType() == VARIANT_DATA_EXCLUDED_TYPE) {
             return stack;

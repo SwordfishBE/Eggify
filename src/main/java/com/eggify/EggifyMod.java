@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public final class EggifyMod implements ModInitializer {
     public static final String MOD_ID = "eggify";
-    public static final String MINECRAFT_VERSION = "1.21.11";
+    public static final String MINECRAFT_VERSION = "26.1.1";
     public static final String LOG_PREFIX = "[Eggify]";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final ConfigManager CONFIG = new ConfigManager();
