@@ -1,8 +1,8 @@
-package com.eggify;
+package net.eggify;
 
-import com.eggify.command.EggifyCommand;
-import com.eggify.config.ConfigManager;
-import com.eggify.config.EggifyConfig;
+import net.eggify.command.EggifyCommand;
+import net.eggify.config.ConfigManager;
+import net.eggify.config.EggifyConfig;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import org.slf4j.Logger;

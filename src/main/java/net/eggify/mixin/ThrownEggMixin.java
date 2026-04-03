@@ -1,6 +1,6 @@
-package com.eggify.mixin;
+package net.eggify.mixin;
 
-import com.eggify.EggifyMobHandler;
+import net.eggify.EggifyMobHandler;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEgg;

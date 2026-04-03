@@ -56,7 +56,10 @@ Eggify supports the following permission nodes when `useLuckPerms=true`:
 Notes:
 
 - Without LuckPerms, eggifying is available to everyone.
+- Without active LuckPerms integration, `/eggify info` is controlled by `allowCommandPermissionNode`.
+- Without active LuckPerms integration, `/eggify held` is controlled by `allowDebugCommand`.
 - `/eggify reload` is always OP-only.
+- When `useLuckPerms=true` and LuckPerms is installed, `allowCommandPermissionNode` and `allowDebugCommand` are ignored.
 - OP players can still use the admin commands even when LuckPerms support is enabled.
 
 ---
@@ -67,7 +70,7 @@ The config file is created at:
 
 `config/eggify.json`
 
-The file now includes inline comments to explain every option.
+The file includes inline comments to explain every option.
 
 Default config:
 
@@ -82,6 +85,9 @@ Default config:
 
   // When true, non-OP players can use /eggify info with eggify.command.
   "allowCommandPermissionNode": false,
+
+  // When true, non-OP players can use /eggify held without LuckPerms.
+  "allowDebugCommand": false,
 
   // Enables the Modrinth update check.
   "enableUpdateCheck": true,
@@ -130,10 +136,16 @@ Suggested LuckPerms examples:
 /lp user <player> permission set eggify.debug true
 ```
 
-If you want non-OP players to use `/eggify info`, also set:
+If you want non-OP players to use `/eggify info` without LuckPerms, also set:
 
 ```jsonc
 "allowCommandPermissionNode": true
+```
+
+If you want non-OP players to use `/eggify held` without LuckPerms, also set:
+
+```jsonc
+"allowDebugCommand": true
 ```
 
 Then run:

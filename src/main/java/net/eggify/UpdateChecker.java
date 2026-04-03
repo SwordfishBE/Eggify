@@ -1,4 +1,4 @@
-package com.eggify;
+package net.eggify;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

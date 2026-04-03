@@ -1,8 +1,8 @@
-package com.eggify.command;
+package net.eggify.command;
 
-import com.eggify.EggifyMod;
-import com.eggify.PermissionHelper;
-import com.eggify.config.EggifyConfig;
+import net.eggify.EggifyMod;
+import net.eggify.PermissionHelper;
+import net.eggify.config.EggifyConfig;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -50,13 +50,16 @@ public final class EggifyCommand {
     private static int showInfo(CommandSourceStack source) {
         EggifyConfig config = EggifyMod.CONFIG.getConfig();
         boolean luckPermsInstalled = PermissionHelper.isLuckPermsInstalled();
+        boolean usingLuckPermsPermissions = PermissionHelper.usesLuckPermsPermissions(config);
         String blacklist = config.blacklistedMobs.isEmpty() ? "none" : String.join(", ", config.blacklistedMobs);
 
         source.sendSuccess(() -> Component.literal("Eggify configuration"), false);
         source.sendSuccess(() -> Component.literal("Drop chance: " + config.dropChancePercent + "%"), false);
         source.sendSuccess(() -> Component.literal("LuckPerms mode enabled: " + config.useLuckPerms), false);
         source.sendSuccess(() -> Component.literal("LuckPerms detected: " + luckPermsInstalled), false);
-        source.sendSuccess(() -> Component.literal("Command permission node enabled: " + config.allowCommandPermissionNode), false);
+        source.sendSuccess(() -> Component.literal("LuckPerms permissions active: " + usingLuckPermsPermissions), false);
+        source.sendSuccess(() -> Component.literal("Command permission node enabled: " + config.allowCommandPermissionNode + (usingLuckPermsPermissions ? " (ignored while LuckPerms is active)" : "")), false);
+        source.sendSuccess(() -> Component.literal("Held debug command enabled: " + config.allowDebugCommand + (usingLuckPermsPermissions ? " (ignored while LuckPerms is active)" : "")), false);
         source.sendSuccess(() -> Component.literal("Permission nodes: " + PermissionHelper.USE_PERMISSION + ", " + PermissionHelper.COMMAND_PERMISSION + ", " + PermissionHelper.DEBUG_PERMISSION), false);
         source.sendSuccess(() -> Component.literal("Blacklist: " + blacklist), false);
         return Command.SINGLE_SUCCESS;

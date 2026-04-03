@@ -1,7 +1,7 @@
-package com.eggify;
+package net.eggify;
 
 import net.minecraft.advancements.criterion.NbtPredicate;
-import com.eggify.config.EggifyConfig;
+import net.eggify.config.EggifyConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;

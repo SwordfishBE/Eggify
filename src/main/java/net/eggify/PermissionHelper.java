@@ -1,6 +1,6 @@
-package com.eggify;
+package net.eggify;
 
-import com.eggify.config.EggifyConfig;
+import net.eggify.config.EggifyConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,11 +40,14 @@ public final class PermissionHelper {
             return true;
         }
 
-        if (!config.allowCommandPermissionNode || !config.useLuckPerms || !isLuckPermsInstalled()) {
-            return false;
+        if (usesLuckPermsPermissions(config)) {
+            return hasLuckPermsPermission(player, COMMAND_PERMISSION);
         }
 
-        return hasLuckPermsPermission(player, COMMAND_PERMISSION);
+        if (!config.allowCommandPermissionNode) {
+            return false;
+        }
+        return true;
     }
 
     public static boolean canReloadCommand(CommandSourceStack source) {
@@ -65,11 +68,15 @@ public final class PermissionHelper {
             return true;
         }
 
-        if (!config.useLuckPerms || !isLuckPermsInstalled()) {
-            return false;
+        if (usesLuckPermsPermissions(config)) {
+            return hasLuckPermsPermission(player, DEBUG_PERMISSION);
         }
 
-        return hasLuckPermsPermission(player, DEBUG_PERMISSION);
+        return config.allowDebugCommand;
+    }
+
+    public static boolean usesLuckPermsPermissions(EggifyConfig config) {
+        return config.useLuckPerms && isLuckPermsInstalled();
     }
 
     private static boolean isOpCommandSource(CommandSourceStack source, ServerPlayer player) {

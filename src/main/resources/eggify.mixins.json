@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.eggify.mixin",
+  "package": "net.eggify.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
     "ThrownEggMixin"

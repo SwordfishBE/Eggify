@@ -1,6 +1,6 @@
-package com.eggify.config;
+package net.eggify.config;
 
-import com.eggify.EggifyMod;
+import net.eggify.EggifyMod;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
@@ -66,9 +66,14 @@ public final class ConfigManager {
         builder.append("  \"useLuckPerms\": ").append(config.useLuckPerms).append(',').append(NEW_LINE);
         builder.append(NEW_LINE);
         builder.append("  // When true, non-OP players can use /eggify info through the eggify.command node.").append(NEW_LINE);
-        builder.append("  // /eggify reload always stays OP-only.").append(NEW_LINE);
+        builder.append("  // Ignored when LuckPerms is enabled and installed.").append(NEW_LINE);
         builder.append("  \"allowCommandPermissionNode\": ").append(config.allowCommandPermissionNode).append(',').append(NEW_LINE);
         builder.append(NEW_LINE);
+        builder.append("  // When true, non-OP players can use /eggify held without LuckPerms.").append(NEW_LINE);
+        builder.append("  // Ignored when LuckPerms is enabled and installed.").append(NEW_LINE);
+        builder.append("  \"allowDebugCommand\": ").append(config.allowDebugCommand).append(',').append(NEW_LINE);
+        builder.append(NEW_LINE);
+        builder.append("  // /eggify reload always stays OP-only.").append(NEW_LINE);
         builder.append("  // Enables the Modrinth update check.").append(NEW_LINE);
         builder.append("  \"enableUpdateCheck\": ").append(config.enableUpdateCheck).append(',').append(NEW_LINE);
         builder.append(NEW_LINE);

@@ -18,7 +18,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.eggify.EggifyMod"
+      "net.eggify.EggifyMod"
     ]
   },
   "mixins": [

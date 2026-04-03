@@ -1,4 +1,4 @@
-package com.eggify.config;
+package net.eggify.config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ public final class EggifyConfig {
     public double dropChancePercent = 2.5D;
     public boolean useLuckPerms = false;
     public boolean allowCommandPermissionNode = false;
+    public boolean allowDebugCommand = false;
     public boolean enableUpdateCheck = true;
     public List<String> blacklistedMobs = new ArrayList<>(List.of(
         "minecraft:ender_dragon",
