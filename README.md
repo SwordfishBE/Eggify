@@ -14,7 +14,7 @@ Examples:
 - `Savanna Armorer Villager` -> `Villager Spawn Egg` with biome, profession and level
 - `Screaming Goat` -> `Goat Spawn Egg` with `Type: Screaming`
 
---
+---
 
 ## ✨ Features
 
@@ -52,7 +52,7 @@ Notes:
 - `/eggify reload` is always OP-only.
 - OP players can still use the admin commands even when LuckPerms support is enabled.
 
---
+---
 
 ## ⚙️ Configuration
 
@@ -87,7 +87,7 @@ Default config:
 }
 ```
 
---
+---
 
 ## 🌍 Variant Notes
 
@@ -111,7 +111,7 @@ This means the mod aims to keep things like:
 
 `Tropical Fish` is intentionally excluded from variant preservation.
 
---
+---
 
 ## For Server Owners
 
