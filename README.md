@@ -2,6 +2,11 @@
 
 Eggify is a Fabric mod for Minecraft that gives thrown eggs a small chance to convert a mob into its spawn egg.
 
+[![GitHub Release](https://img.shields.io/github/v/release/SwordfishBE/Eggify?display_name=release&logo=github)](https://github.com/SwordfishBE/Eggify/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/SwordfishBE/Eggify/total?logo=github)](https://github.com/SwordfishBE/Eggify/releases)
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/kOkcRRPb?logo=modrinth&logoColor=white&label=Modrinth%20downloads)](https://modrinth.com/mod/eggify)
+[![CurseForge Downloads](https://img.shields.io/curseforge/dt/1503282?logo=curseforge&logoColor=white&label=CurseForge%20downloads)](https://www.curseforge.com/minecraft/mc-mods/eggify)
+
 When an eggify succeeds:
 
 - the mob disappears with portal-style particles and a sound is played
@@ -34,6 +39,8 @@ Examples:
   Shows debug info for the item in your main hand.
 - `/eggify reload`
   Reloads the config file.
+
+---
 
 ## 🔄 Permissions
 
@@ -148,6 +155,9 @@ LuckPerms docs:
 | Platform   | Link |
 |------------|------|
 | GitHub     | [Releases](https://github.com/SwordfishBE/Eggify/releases) |
+| Modrinth | [Eggify](https://modrinth.com/mod/eggify) |
+| CurseForge | [Eggify](https://www.curseforge.com/minecraft/mc-mods/eggify) |
+
 
 1. Download the latest JAR from your preferred platform above.
 2. Place the JAR in your server's `mods/` folder.
