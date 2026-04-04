@@ -42,6 +42,18 @@ public final class ConfigManager {
         return this.config;
     }
 
+    public EggifyConfig loadConfigForEditing() {
+        EggifyConfig loadedConfig = this.getConfig();
+        return GSON.fromJson(GSON.toJson(loadedConfig), EggifyConfig.class);
+    }
+
+    public EggifyConfig applyEditedConfig(EggifyConfig editedConfig) {
+        this.config = editedConfig == null ? new EggifyConfig() : editedConfig;
+        this.config.sanitize();
+        this.save();
+        return this.config;
+    }
+
     public void save() {
         try {
             Files.createDirectories(CONFIG_PATH.getParent());

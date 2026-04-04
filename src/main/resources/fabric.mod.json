@@ -19,6 +19,9 @@
   "entrypoints": {
     "main": [
       "net.eggify.EggifyMod"
+    ],
+    "modmenu": [
+      "net.eggify.EggifyModMenuIntegration"
     ]
   },
   "mixins": [
@@ -31,6 +34,8 @@
     "fabric-api": "*"
   },
   "suggests": {
+    "modmenu": "*",
+    "cloth-config": "*",
     "luckperms": "*"
   }
 }

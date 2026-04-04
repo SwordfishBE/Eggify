@@ -32,4 +32,12 @@ public final class EggifyMod implements ModInitializer {
             LOGGER.info("{} Ready!", LOG_PREFIX);
         });
     }
+
+    public static EggifyConfig loadConfigForEditing() {
+        return CONFIG.loadConfigForEditing();
+    }
+
+    public static EggifyConfig applyEditedConfig(EggifyConfig editedConfig) {
+        return CONFIG.applyEditedConfig(editedConfig);
+    }
 }
