@@ -2,41 +2,50 @@ package net.eggify;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.Version;
 
 public final class UpdateChecker {
     private static final String PROJECT_ID = "kOkcRRPb";
+    private static final String MINECRAFT_MOD_ID = "minecraft";
+    private static final String FABRIC_LOADER = "fabric";
+    private static final String RELEASE = "release";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(5))
+        .connectTimeout(Duration.ofSeconds(10))
         .build();
 
     private UpdateChecker() {
     }
 
     public static void checkForUpdates() {
-        if (!EggifyMod.CONFIG.getConfig().enableUpdateCheck) {
+        Optional<String> currentVersion = currentModVersion();
+        if (currentVersion.isEmpty()) {
+            EggifyMod.LOGGER.debug("{} Skipping update check because the current mod version could not be resolved.", EggifyMod.LOG_PREFIX);
             return;
         }
 
-        String currentVersion = FabricLoader.getInstance().getModContainer(EggifyMod.MOD_ID)
-            .map(container -> container.getMetadata().getVersion().getFriendlyString())
-            .orElse("unknown");
-        String loaders = URLEncoder.encode("[\"fabric\"]", StandardCharsets.UTF_8);
-        String versions = URLEncoder.encode("[\"" + EggifyMod.MINECRAFT_VERSION + "\"]", StandardCharsets.UTF_8);
-        URI uri = URI.create("https://api.modrinth.com/v2/project/" + PROJECT_ID + "/version?loaders=" + loaders + "&game_versions=" + versions);
+        Optional<String> minecraftVersion = currentMinecraftVersion();
+        if (minecraftVersion.isEmpty()) {
+            EggifyMod.LOGGER.debug("{} Skipping update check because the current Minecraft version could not be resolved.", EggifyMod.LOG_PREFIX);
+            return;
+        }
+
+        URI uri = URI.create("https://api.modrinth.com/v2/project/" + PROJECT_ID + "/version");
         HttpRequest request = HttpRequest.newBuilder(uri)
-            .header("User-Agent", "Eggify/" + currentVersion + " (modrinth update check)")
-            .timeout(Duration.ofSeconds(8))
+            .header("User-Agent", "Eggify/" + currentVersion.get() + " (modrinth update check)")
+            .timeout(Duration.ofSeconds(10))
             .GET()
             .build();
 
@@ -55,12 +64,21 @@ public final class UpdateChecker {
 
                 JsonArray versionsArray = parsed.getAsJsonArray();
                 if (versionsArray.isEmpty()) {
+                    EggifyMod.LOGGER.debug("{} Modrinth update check returned no versions.", EggifyMod.LOG_PREFIX);
                     return;
                 }
 
-                String latestVersion = versionsArray.get(0).getAsJsonObject().get("version_number").getAsString();
-                if (!currentVersion.equals(latestVersion)) {
-                    EggifyMod.LOGGER.info("{} Update available on Modrinth: current={}, latest={}", EggifyMod.LOG_PREFIX, currentVersion, latestVersion);
+                Optional<VersionCandidate> latestVersion = findLatestVersion(versionsArray, minecraftVersion.get());
+                if (latestVersion.isEmpty()) {
+                    EggifyMod.LOGGER.debug("{} No valid Modrinth release found during update check.", EggifyMod.LOG_PREFIX);
+                    return;
+                }
+
+                String latestVersionNumber = latestVersion.get().versionNumber();
+                if (isNewerVersionAvailable(currentVersion.get(), latestVersionNumber)) {
+                    EggifyMod.LOGGER.info("{} New version available: {} (current: {})", EggifyMod.LOG_PREFIX, latestVersionNumber, currentVersion.get());
+                } else {
+                    EggifyMod.LOGGER.debug("{} No new version available. current={}, latest={}", EggifyMod.LOG_PREFIX, currentVersion.get(), latestVersionNumber);
                 }
             } catch (IOException | InterruptedException exception) {
                 EggifyMod.LOGGER.debug("{} Update check failed: {}", EggifyMod.LOG_PREFIX, exception.getMessage());
@@ -69,5 +87,148 @@ public final class UpdateChecker {
                 }
             }
         });
+    }
+
+    private static Optional<String> currentModVersion() {
+        return FabricLoader.getInstance().getModContainer(EggifyMod.MOD_ID)
+            .map(container -> container.getMetadata().getVersion().getFriendlyString())
+            .filter(version -> !version.isBlank());
+    }
+
+    private static Optional<String> currentMinecraftVersion() {
+        return FabricLoader.getInstance().getModContainer(MINECRAFT_MOD_ID)
+            .map(container -> container.getMetadata().getVersion().getFriendlyString())
+            .filter(version -> !version.isBlank());
+    }
+
+    private static Optional<VersionCandidate> findLatestVersion(JsonArray versionsArray, String minecraftVersion) {
+        VersionCandidate newestCompatibleRelease = null;
+        VersionCandidate newestRelease = null;
+
+        for (JsonElement element : versionsArray) {
+            if (!element.isJsonObject()) {
+                continue;
+            }
+
+            JsonObject versionObject = element.getAsJsonObject();
+            if (!RELEASE.equals(getString(versionObject, "version_type").orElse(null))) {
+                continue;
+            }
+
+            Optional<VersionCandidate> candidate = getVersionCandidate(versionObject);
+            if (candidate.isEmpty()) {
+                continue;
+            }
+
+            VersionCandidate versionCandidate = candidate.get();
+            if (isNewerCandidate(versionCandidate, newestRelease)) {
+                newestRelease = versionCandidate;
+            }
+
+            if (jsonArrayContains(versionObject, "loaders", FABRIC_LOADER)
+                && jsonArrayContains(versionObject, "game_versions", minecraftVersion)
+                && isNewerCandidate(versionCandidate, newestCompatibleRelease)) {
+                newestCompatibleRelease = versionCandidate;
+            }
+        }
+
+        return Optional.ofNullable(newestCompatibleRelease != null ? newestCompatibleRelease : newestRelease);
+    }
+
+    private static boolean isNewerCandidate(VersionCandidate candidate, VersionCandidate currentBest) {
+        return currentBest == null || candidate.publishedAt().isAfter(currentBest.publishedAt());
+    }
+
+    private static Optional<VersionCandidate> getVersionCandidate(JsonObject versionObject) {
+        Optional<String> versionNumber = getString(versionObject, "version_number");
+        if (versionNumber.isEmpty() || !isValidVersionNumber(versionNumber.get())) {
+            return Optional.empty();
+        }
+
+        Optional<Instant> publishedAt = getPublishedAt(versionObject);
+        if (publishedAt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new VersionCandidate(versionNumber.get(), publishedAt.get()));
+    }
+
+    private static Optional<String> getString(JsonObject object, String fieldName) {
+        JsonElement element = object.get(fieldName);
+        if (element == null || element.isJsonNull()) {
+            return Optional.empty();
+        }
+
+        try {
+            String value = element.getAsString();
+            return value == null || value.isBlank() ? Optional.empty() : Optional.of(value);
+        } catch (UnsupportedOperationException | ClassCastException | IllegalStateException exception) {
+            return Optional.empty();
+        }
+    }
+
+    private static boolean jsonArrayContains(JsonObject object, String fieldName, String expectedValue) {
+        JsonElement element = object.get(fieldName);
+        if (element == null || !element.isJsonArray()) {
+            return false;
+        }
+
+        for (JsonElement arrayElement : element.getAsJsonArray()) {
+            if (!arrayElement.isJsonPrimitive()) {
+                continue;
+            }
+
+            try {
+                if (expectedValue.equals(arrayElement.getAsString())) {
+                    return true;
+                }
+            } catch (UnsupportedOperationException | ClassCastException | IllegalStateException exception) {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private static Optional<Instant> getPublishedAt(JsonObject versionObject) {
+        Optional<String> publishedAt = getString(versionObject, "date_published");
+        if (publishedAt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.of(Instant.parse(publishedAt.get()));
+        } catch (DateTimeParseException exception) {
+            return Optional.empty();
+        }
+    }
+
+    private static boolean isValidVersionNumber(String versionNumber) {
+        try {
+            Version.parse(versionNumber);
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
+    private static boolean isNewerVersionAvailable(String currentVersion, String candidateVersion) {
+        try {
+            Version current = Version.parse(currentVersion);
+            Version candidate = Version.parse(candidateVersion);
+            return candidate.compareTo(current) > 0;
+        } catch (Exception exception) {
+            EggifyMod.LOGGER.debug(
+                "{} Unable to compare versions. current={}, candidate={}, reason={}",
+                EggifyMod.LOG_PREFIX,
+                currentVersion,
+                candidateVersion,
+                exception.getMessage()
+            );
+            return false;
+        }
+    }
+
+    private record VersionCandidate(String versionNumber, Instant publishedAt) {
     }
 }

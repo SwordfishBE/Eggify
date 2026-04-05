@@ -85,10 +85,6 @@ public final class ConfigManager {
         builder.append("  // Ignored when LuckPerms is enabled and installed.").append(NEW_LINE);
         builder.append("  \"allowDebugCommand\": ").append(config.allowDebugCommand).append(',').append(NEW_LINE);
         builder.append(NEW_LINE);
-        builder.append("  // /eggify reload always stays OP-only.").append(NEW_LINE);
-        builder.append("  // Enables the Modrinth update check.").append(NEW_LINE);
-        builder.append("  \"enableUpdateCheck\": ").append(config.enableUpdateCheck).append(',').append(NEW_LINE);
-        builder.append(NEW_LINE);
         builder.append("  // Mobs in this list can never be eggified. Use full namespaced IDs.").append(NEW_LINE);
         builder.append("  \"blacklistedMobs\": [").append(NEW_LINE);
         for (int index = 0; index < config.blacklistedMobs.size(); index++) {

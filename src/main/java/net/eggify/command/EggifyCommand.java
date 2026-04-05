@@ -43,6 +43,7 @@ public final class EggifyCommand {
 
     private static int reloadConfig(CommandSourceStack source) {
         EggifyMod.CONFIG.load();
+        EggifyMod.LOGGER.info("{} Config reloaded via command.", EggifyMod.LOG_PREFIX);
         source.sendSuccess(() -> Component.literal("Eggify config reloaded."), true);
         return Command.SINGLE_SUCCESS;
     }

@@ -24,7 +24,7 @@ Examples:
 ## ✨ Features
 
 - Configurable drop chance
-- LuckPerms support with automatic detection
+- LuckPerms support through fabric-permissions-api
 - Blacklist support for mobs that should never drop spawn eggs
 - Variant preservation for many mobs
 - Spawn egg tooltip details such as age, color, biome, profession, coat, personality or type
@@ -88,9 +88,6 @@ Default config:
 
   // When true, non-OP players can use /eggify held without LuckPerms.
   "allowDebugCommand": false,
-
-  // Enables the Modrinth update check.
-  "enableUpdateCheck": true,
 
   // Mobs in this list can never be eggified.
   "blacklistedMobs": [

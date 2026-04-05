@@ -33,12 +33,6 @@ final class EggifyClothConfigScreen {
             .setSaveConsumer(value -> config.dropChancePercent = value)
             .build());
 
-        general.addEntry(entries.startBooleanToggle(Component.literal("Enable Update Check"), config.enableUpdateCheck)
-            .setDefaultValue(true)
-            .setTooltip(Component.literal("Checks Modrinth for newer Eggify releases."))
-            .setSaveConsumer(value -> config.enableUpdateCheck = value)
-            .build());
-
         permissions.addEntry(entries.startBooleanToggle(Component.literal("Use LuckPerms"), config.useLuckPerms)
             .setDefaultValue(false)
             .setTooltip(Component.literal("Requires LuckPerms permission nodes for Eggify access."))

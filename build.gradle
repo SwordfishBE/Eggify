@@ -32,8 +32,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    include(implementation("me.lucko:fabric-permissions-api:0.7.0"))
     implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-    compileOnly "net.luckperms:api:5.5"
 
     compileOnly("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
         exclude group: "net.fabricmc.fabric-api"

@@ -8,7 +8,6 @@ public final class EggifyConfig {
     public boolean useLuckPerms = false;
     public boolean allowCommandPermissionNode = false;
     public boolean allowDebugCommand = false;
-    public boolean enableUpdateCheck = true;
     public List<String> blacklistedMobs = new ArrayList<>(List.of(
         "minecraft:ender_dragon",
         "minecraft:wither"
