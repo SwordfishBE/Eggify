@@ -23,7 +23,7 @@ Examples:
 
 ## ✨ Features
 
-- Configurable passive, hostile and boss drop chances
+- Configurable passive, hostile and boss drop chances for mobs with vanilla spawn eggs
 - Craftable `Egg of No Escape` for guaranteed captures
 - LuckPerms support through fabric-permissions-api
 - Blacklist support for mobs that should never drop spawn eggs
@@ -107,8 +107,8 @@ Default config:
   "specialEggRecoveryChancePercent": 50.0,
 
   // Mobs in this list use the boss rarity.
+  // Only mobs with a vanilla spawn egg can actually be captured.
   "bossMobs": [
-    "minecraft:ender_dragon",
     "minecraft:wither"
   ],
 
@@ -156,6 +156,8 @@ Suggested LuckPerms examples:
 ```
 
 The `Egg of No Escape` recipe uses 8 diamonds around 1 egg. It shows up in the recipe book with its custom name, guarantees capture on a hit, and on a miss it has a 50% default chance to drop back intact instead of breaking.
+
+Eggify can only capture mobs that have a vanilla spawn egg. For example, the Wither works, but the Ender Dragon does not because Minecraft does not provide a vanilla dragon spawn egg.
 
 If you want non-OP players to use `/eggify info` without LuckPerms, also set:
 

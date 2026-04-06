@@ -14,7 +14,6 @@ public final class EggifyConfig {
     public boolean enableSpecialEgg = true;
     public double specialEggRecoveryChancePercent = 50.0D;
     public List<String> bossMobs = new ArrayList<>(List.of(
-        "minecraft:ender_dragon",
         "minecraft:wither"
     ));
     public List<String> blacklistedMobs = new ArrayList<>();

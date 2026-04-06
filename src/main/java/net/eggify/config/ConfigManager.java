@@ -98,6 +98,7 @@ public final class ConfigManager {
         builder.append("  \"specialEggRecoveryChancePercent\": ").append(formatDouble(config.specialEggRecoveryChancePercent)).append(',').append(NEW_LINE);
         builder.append(NEW_LINE);
         builder.append("  // Mobs in this list use the bossDropChancePercent value. Use full namespaced IDs.").append(NEW_LINE);
+        builder.append("  // Only mobs with a vanilla spawn egg can be captured and dropped.").append(NEW_LINE);
         builder.append("  \"bossMobs\": [").append(NEW_LINE);
         for (int index = 0; index < config.bossMobs.size(); index++) {
             String mobId = config.bossMobs.get(index);
