@@ -1,6 +1,6 @@
 # 🥚 Eggify
 
-Eggify is a Fabric mod for Minecraft that gives thrown eggs a small chance to convert a mob into its spawn egg.
+Eggify is a Fabric mod for Minecraft that gives thrown eggs a configurable chance to convert a mob into its spawn egg.
 
 [![GitHub Release](https://img.shields.io/github/v/release/SwordfishBE/Eggify?display_name=release&logo=github)](https://github.com/SwordfishBE/Eggify/releases)
 [![GitHub Downloads](https://img.shields.io/github/downloads/SwordfishBE/Eggify/total?logo=github)](https://github.com/SwordfishBE/Eggify/releases)
@@ -23,7 +23,8 @@ Examples:
 
 ## ✨ Features
 
-- Configurable drop chance
+- Configurable passive, hostile and boss drop chances
+- Craftable `Egg of No Escape` for guaranteed captures
 - LuckPerms support through fabric-permissions-api
 - Blacklist support for mobs that should never drop spawn eggs
 - Variant preservation for many mobs
@@ -52,6 +53,10 @@ Eggify supports the following permission nodes when `useLuckPerms=true`:
   Allows the player to use `/eggify info` when `allowCommandPermissionNode=true`.
 - `eggify.debug`
   Allows the player to use `/eggify held`.
+- `eggify.special.craft`
+  Allows the player to craft the `Egg of No Escape`.
+- `eggify.special.use`
+  Allows the player to throw and use the `Egg of No Escape`.
 
 Notes:
 
@@ -77,8 +82,14 @@ Default config:
 ```jsonc
 // Eggify configuration
 {
-  // Chance in percent that a thrown egg converts a mob into its spawn egg.
-  "dropChancePercent": 2.5,
+  // Chance in percent that a thrown egg converts a passive mob into its spawn egg.
+  "passiveDropChancePercent": 30.0,
+
+  // Chance in percent that a thrown egg converts a hostile mob into its spawn egg.
+  "hostileDropChancePercent": 15.0,
+
+  // Chance in percent that a thrown egg converts a configured boss mob into its spawn egg.
+  "bossDropChancePercent": 5.0,
 
   // When true, Eggify requires LuckPerms permission nodes.
   "useLuckPerms": false,
@@ -89,11 +100,20 @@ Default config:
   // When true, non-OP players can use /eggify held without LuckPerms.
   "allowDebugCommand": false,
 
-  // Mobs in this list can never be eggified.
-  "blacklistedMobs": [
+  // Enables the Egg of No Escape recipe and guaranteed capture effect.
+  "enableSpecialEgg": true,
+
+  // Chance in percent that a missed Egg of No Escape drops back intact.
+  "specialEggRecoveryChancePercent": 50.0,
+
+  // Mobs in this list use the boss rarity.
+  "bossMobs": [
     "minecraft:ender_dragon",
     "minecraft:wither"
-  ]
+  ],
+
+  // Mobs in this list can never be eggified.
+  "blacklistedMobs": []
 }
 ```
 
@@ -131,7 +151,11 @@ Suggested LuckPerms examples:
 /lp user <player> permission set eggify.use true
 /lp user <player> permission set eggify.command true
 /lp user <player> permission set eggify.debug true
+/lp user <player> permission set eggify.special.craft true
+/lp user <player> permission set eggify.special.use true
 ```
+
+The `Egg of No Escape` recipe uses 8 diamonds around 1 egg. It shows up in the recipe book with its custom name, guarantees capture on a hit, and on a miss it has a 50% default chance to drop back intact instead of breaking.
 
 If you want non-OP players to use `/eggify info` without LuckPerms, also set:
 

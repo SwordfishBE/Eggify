@@ -52,16 +52,22 @@ public final class EggifyCommand {
         EggifyConfig config = EggifyMod.CONFIG.getConfig();
         boolean luckPermsInstalled = PermissionHelper.isLuckPermsInstalled();
         boolean usingLuckPermsPermissions = PermissionHelper.usesLuckPermsPermissions(config);
+        String bosses = config.bossMobs.isEmpty() ? "none" : String.join(", ", config.bossMobs);
         String blacklist = config.blacklistedMobs.isEmpty() ? "none" : String.join(", ", config.blacklistedMobs);
 
         source.sendSuccess(() -> Component.literal("Eggify configuration"), false);
-        source.sendSuccess(() -> Component.literal("Drop chance: " + config.dropChancePercent + "%"), false);
+        source.sendSuccess(() -> Component.literal("Passive drop chance: " + config.passiveDropChancePercent + "%"), false);
+        source.sendSuccess(() -> Component.literal("Hostile drop chance: " + config.hostileDropChancePercent + "%"), false);
+        source.sendSuccess(() -> Component.literal("Boss drop chance: " + config.bossDropChancePercent + "%"), false);
         source.sendSuccess(() -> Component.literal("LuckPerms mode enabled: " + config.useLuckPerms), false);
         source.sendSuccess(() -> Component.literal("LuckPerms detected: " + luckPermsInstalled), false);
         source.sendSuccess(() -> Component.literal("LuckPerms permissions active: " + usingLuckPermsPermissions), false);
         source.sendSuccess(() -> Component.literal("Command permission node enabled: " + config.allowCommandPermissionNode + (usingLuckPermsPermissions ? " (ignored while LuckPerms is active)" : "")), false);
         source.sendSuccess(() -> Component.literal("Held debug command enabled: " + config.allowDebugCommand + (usingLuckPermsPermissions ? " (ignored while LuckPerms is active)" : "")), false);
-        source.sendSuccess(() -> Component.literal("Permission nodes: " + PermissionHelper.USE_PERMISSION + ", " + PermissionHelper.COMMAND_PERMISSION + ", " + PermissionHelper.DEBUG_PERMISSION), false);
+        source.sendSuccess(() -> Component.literal("Special egg enabled: " + config.enableSpecialEgg), false);
+        source.sendSuccess(() -> Component.literal("Special egg recovery chance: " + config.specialEggRecoveryChancePercent + "%"), false);
+        source.sendSuccess(() -> Component.literal("Permission nodes: " + PermissionHelper.USE_PERMISSION + ", " + PermissionHelper.COMMAND_PERMISSION + ", " + PermissionHelper.DEBUG_PERMISSION + ", " + PermissionHelper.SPECIAL_EGG_CRAFT_PERMISSION + ", " + PermissionHelper.SPECIAL_EGG_USE_PERMISSION), false);
+        source.sendSuccess(() -> Component.literal("Boss mobs: " + bosses), false);
         source.sendSuccess(() -> Component.literal("Blacklist: " + blacklist), false);
         return Command.SINGLE_SUCCESS;
     }

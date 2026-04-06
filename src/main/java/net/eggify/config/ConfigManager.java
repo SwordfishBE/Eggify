@@ -69,11 +69,17 @@ public final class ConfigManager {
         builder.append("// This file supports // comments.").append(NEW_LINE);
         builder.append("// Reload changes with /eggify reload.").append(NEW_LINE);
         builder.append('{').append(NEW_LINE);
-        builder.append("  // Chance in percent that a thrown egg converts a mob into its spawn egg.").append(NEW_LINE);
-        builder.append("  // Default is intentionally low but still realistic for survival gameplay.").append(NEW_LINE);
-        builder.append("  \"dropChancePercent\": ").append(formatDouble(config.dropChancePercent)).append(',').append(NEW_LINE);
+        builder.append("  // Chance in percent that a thrown egg converts a passive mob into its spawn egg.").append(NEW_LINE);
+        builder.append("  \"passiveDropChancePercent\": ").append(formatDouble(config.passiveDropChancePercent)).append(',').append(NEW_LINE);
         builder.append(NEW_LINE);
-        builder.append("  // When true, Eggify requires LuckPerms + fabric-permissions-api permission nodes.").append(NEW_LINE);
+        builder.append("  // Chance in percent that a thrown egg converts a hostile mob into its spawn egg.").append(NEW_LINE);
+        builder.append("  \"hostileDropChancePercent\": ").append(formatDouble(config.hostileDropChancePercent)).append(',').append(NEW_LINE);
+        builder.append(NEW_LINE);
+        builder.append("  // Chance in percent that a thrown egg converts a boss mob into its spawn egg.").append(NEW_LINE);
+        builder.append("  // Boss detection uses the bossMobs list below.").append(NEW_LINE);
+        builder.append("  \"bossDropChancePercent\": ").append(formatDouble(config.bossDropChancePercent)).append(',').append(NEW_LINE);
+        builder.append(NEW_LINE);
+        builder.append("  // When true, Eggify requires LuckPerms permission nodes.").append(NEW_LINE);
         builder.append("  // When false, every player can use Eggify drops.").append(NEW_LINE);
         builder.append("  \"useLuckPerms\": ").append(config.useLuckPerms).append(',').append(NEW_LINE);
         builder.append(NEW_LINE);
@@ -85,14 +91,28 @@ public final class ConfigManager {
         builder.append("  // Ignored when LuckPerms is enabled and installed.").append(NEW_LINE);
         builder.append("  \"allowDebugCommand\": ").append(config.allowDebugCommand).append(',').append(NEW_LINE);
         builder.append(NEW_LINE);
-        builder.append("  // Mobs in this list can never be eggified. Use full namespaced IDs.").append(NEW_LINE);
+        builder.append("  // Enables the Egg of No Escape recipe and its guaranteed capture effect.").append(NEW_LINE);
+        builder.append("  \"enableSpecialEgg\": ").append(config.enableSpecialEgg).append(',').append(NEW_LINE);
+        builder.append(NEW_LINE);
+        builder.append("  // Chance in percent that a missed Egg of No Escape drops back intact instead of breaking.").append(NEW_LINE);
+        builder.append("  \"specialEggRecoveryChancePercent\": ").append(formatDouble(config.specialEggRecoveryChancePercent)).append(',').append(NEW_LINE);
+        builder.append(NEW_LINE);
+        builder.append("  // Mobs in this list use the bossDropChancePercent value. Use full namespaced IDs.").append(NEW_LINE);
+        builder.append("  \"bossMobs\": [").append(NEW_LINE);
+        for (int index = 0; index < config.bossMobs.size(); index++) {
+            String mobId = config.bossMobs.get(index);
+            builder.append("    ").append(GSON.toJson(mobId));
+            builder.append(index < config.bossMobs.size() - 1 ? "," : "");
+            builder.append(NEW_LINE);
+        }
+        builder.append("  ],").append(NEW_LINE);
+        builder.append(NEW_LINE);
+        builder.append("  // Mobs in this list can never be eggified. Use full namespaced IDs. Leave empty for none.").append(NEW_LINE);
         builder.append("  \"blacklistedMobs\": [").append(NEW_LINE);
         for (int index = 0; index < config.blacklistedMobs.size(); index++) {
             String mobId = config.blacklistedMobs.get(index);
             builder.append("    ").append(GSON.toJson(mobId));
-            if (index < config.blacklistedMobs.size() - 1) {
-                builder.append(',');
-            }
+            builder.append(index < config.blacklistedMobs.size() - 1 ? "," : "");
             builder.append(NEW_LINE);
         }
         builder.append("  ]").append(NEW_LINE);

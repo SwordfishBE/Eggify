@@ -4,6 +4,7 @@ import net.eggify.command.EggifyCommand;
 import net.eggify.config.ConfigManager;
 import net.eggify.config.EggifyConfig;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -23,10 +24,12 @@ public final class EggifyMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        EggifyConfig config = CONFIG.load();
+        CONFIG.load();
         LOGGER.info("{} Mod initialized. Version: {}", LOG_PREFIX, MOD_VERSION);
         EggifyCommand.register();
+        UseItemCallback.EVENT.register(SpecialEggHelper::handleUse);
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            EggifyConfig config = CONFIG.getConfig();
             boolean luckPermsInstalled = PermissionHelper.isLuckPermsInstalled();
             if (config.useLuckPerms && !luckPermsInstalled) {
                 LOGGER.warn("{} LuckPerms support is enabled in config, but LuckPerms is not installed.", LOG_PREFIX);

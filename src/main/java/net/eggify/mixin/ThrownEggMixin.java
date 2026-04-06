@@ -38,6 +38,10 @@ abstract class ThrownEggMixin extends ThrowableItemProjectile {
             }
         }
 
+        if (!this.eggify$successfulHit && EggifyMobHandler.handleSpecialMiss((ThrownEgg) (Object) this)) {
+            this.eggify$successfulHit = true;
+        }
+
         if (this.eggify$successfulHit) {
             this.discard();
             callbackInfo.cancel();

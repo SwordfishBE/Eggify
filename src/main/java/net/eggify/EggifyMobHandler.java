@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.chicken.Chicken;
@@ -28,6 +29,7 @@ import net.minecraft.world.entity.animal.panda.Panda;
 import net.minecraft.world.entity.animal.rabbit.Rabbit;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
@@ -69,7 +71,8 @@ public final class EggifyMobHandler {
             return false;
         }
 
-        if (!PermissionHelper.canEggify(player)) {
+        boolean specialEgg = SpecialEggHelper.isSpecialEgg(egg.getItem());
+        if (specialEgg ? !PermissionHelper.canUseSpecialEgg(player) : !PermissionHelper.canEggify(player)) {
             return false;
         }
 
@@ -85,23 +88,65 @@ public final class EggifyMobHandler {
             return false;
         }
 
-        double chance = config.dropChancePercent / 100.0D;
+        double chance = specialEgg ? 1.0D : resolveDropChance(mob, config);
         if (serverLevel.getRandom().nextDouble() > chance) {
             return false;
         }
 
         drop = createSpawnEggDrop(mob, drop);
 
-        serverLevel.sendParticles(ParticleTypes.PORTAL, mob.getX(), mob.getY(0.5D), mob.getZ(), 32, 0.4D, 0.8D, 0.4D, 0.2D);
-        serverLevel.playSound(null, mob.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS, 0.9F, 0.9F + serverLevel.getRandom().nextFloat() * 0.2F);
+        if (specialEgg) {
+            serverLevel.sendParticles(ParticleTypes.WITCH, mob.getX(), mob.getY(0.5D), mob.getZ(), 30, 0.35D, 0.75D, 0.35D, 0.02D);
+            serverLevel.playSound(null, mob.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, SoundSource.PLAYERS, 1.0F, 1.0F);
+        } else {
+            serverLevel.sendParticles(ParticleTypes.PORTAL, mob.getX(), mob.getY(0.5D), mob.getZ(), 32, 0.4D, 0.8D, 0.4D, 0.2D);
+            serverLevel.playSound(null, mob.blockPosition(), SoundEvents.CHICKEN_EGG, SoundSource.PLAYERS, 0.9F, 0.9F + serverLevel.getRandom().nextFloat() * 0.2F);
+        }
         mob.spawnAtLocation(serverLevel, drop);
         mob.discard();
         EggifyMod.LOGGER.debug("{} {} eggified {}", EggifyMod.LOG_PREFIX, player.getName().getString(), BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()));
         return true;
     }
 
+    public static boolean handleSpecialMiss(ThrownEgg egg) {
+        if (!SpecialEggHelper.isSpecialEgg(egg.getItem())) {
+            return false;
+        }
+
+        if (!(egg.level() instanceof ServerLevel serverLevel)) {
+            return true;
+        }
+
+        EggifyConfig config = EggifyMod.CONFIG.getConfig();
+        double recoveryChance = config.specialEggRecoveryChancePercent / 100.0D;
+        if (serverLevel.getRandom().nextDouble() <= recoveryChance) {
+            ItemStack recoveredEgg = egg.getItem().copy();
+            recoveredEgg.setCount(1);
+            egg.spawnAtLocation(serverLevel, recoveredEgg);
+        } else {
+            serverLevel.sendParticles(ParticleTypes.PORTAL, egg.getX(), egg.getY(), egg.getZ(), 24, 0.2D, 0.2D, 0.2D, 0.25D);
+            serverLevel.sendParticles(ParticleTypes.END_ROD, egg.getX(), egg.getY(), egg.getZ(), 12, 0.15D, 0.15D, 0.15D, 0.02D);
+            serverLevel.playSound(null, egg.blockPosition(), SoundEvents.ENDER_EYE_DEATH, SoundSource.PLAYERS, 0.9F, 1.0F);
+        }
+
+        return true;
+    }
+
     private static boolean isBlacklisted(Mob mob, EggifyConfig config) {
         return config.blacklistedMobs.contains(BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()).toString());
+    }
+
+    private static double resolveDropChance(Mob mob, EggifyConfig config) {
+        String mobId = BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()).toString();
+        if (config.bossMobs.contains(mobId)) {
+            return config.bossDropChancePercent / 100.0D;
+        }
+
+        if (mob instanceof Enemy || mob.getType().getCategory() == MobCategory.MONSTER) {
+            return config.hostileDropChancePercent / 100.0D;
+        }
+
+        return config.passiveDropChancePercent / 100.0D;
     }
 
     private static ItemStack createSpawnEggDrop(Mob mob, ItemStack stack) {

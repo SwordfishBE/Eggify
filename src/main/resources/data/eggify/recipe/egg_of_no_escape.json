@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "DDD",
+    "DED",
+    "DDD"
+  ],
+  "key": {
+    "D": "minecraft:diamond",
+    "E": "#eggify:special_egg_bases"
+  },
+  "result": {
+    "id": "minecraft:egg",
+    "count": 1,
+    "components": {
+      "minecraft:custom_name": {
+        "text": "Egg of No Escape",
+        "color": "gold",
+        "bold": true,
+        "italic": false
+      }
+    }
+  }
+}
