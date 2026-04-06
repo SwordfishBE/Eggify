@@ -20,24 +20,31 @@ import java.util.List;
 
 public final class SpecialEggHelper {
     private static final String SPECIAL_EGG_TAG = "EggifySpecial";
+    private static final Component SPECIAL_EGG_NAME = Component.literal("Egg of No Escape")
+        .withStyle(style -> style.withColor(ChatFormatting.GOLD).withBold(true).withItalic(false));
+    private static final Component SPECIAL_EGG_LORE = Component.literal("A hit means capture. Always.")
+        .withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(false));
+
     private SpecialEggHelper() {
     }
 
     public static ItemStack createSpecialEgg() {
         ItemStack stack = new ItemStack(Items.EGG);
+        applySpecialEggComponents(stack);
+        return stack;
+    }
+
+    public static void applySpecialEggComponents(ItemStack stack) {
         CompoundTag customTag = new CompoundTag();
         customTag.putBoolean(SPECIAL_EGG_TAG, true);
 
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(customTag));
-        stack.set(DataComponents.CUSTOM_NAME, Component.literal("Egg of No Escape")
-            .withStyle(style -> style.withColor(ChatFormatting.GOLD).withBold(true).withItalic(false)));
+        stack.set(DataComponents.CUSTOM_NAME, SPECIAL_EGG_NAME);
         stack.set(DataComponents.LORE, new ItemLore(List.of(
-            Component.literal("A hit means capture. Always.")
-                .withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(false))
+            SPECIAL_EGG_LORE
         )));
         stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true);
         stack.set(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT.withHidden(DataComponents.ENCHANTMENTS, true));
-        return stack;
     }
 
     public static boolean isSpecialEgg(ItemStack stack) {
@@ -88,9 +95,8 @@ public final class SpecialEggHelper {
             return ItemStack.EMPTY;
         }
 
-        ItemStack craftedStack = createSpecialEgg();
-        resultStack.applyComponents(craftedStack.getComponentsPatch());
-        resultStack.setCount(craftedStack.getCount());
+        applySpecialEggComponents(resultStack);
+        resultStack.setCount(1);
         return resultStack;
     }
 
