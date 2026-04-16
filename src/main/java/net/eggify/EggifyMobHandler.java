@@ -89,7 +89,7 @@ public final class EggifyMobHandler {
         }
 
         double chance = specialEgg ? 1.0D : resolveDropChance(mob, config);
-        if (serverLevel.getRandom().nextDouble() > chance) {
+        if (serverLevel.getRandom().nextDouble() >= chance) {
             return false;
         }
 

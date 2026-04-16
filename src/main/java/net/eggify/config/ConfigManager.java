@@ -3,6 +3,7 @@ package net.eggify.config;
 import net.eggify.EggifyMod;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,8 +21,8 @@ public final class ConfigManager {
             try {
                 String rawConfig = Files.readString(CONFIG_PATH);
                 this.config = GSON.fromJson(stripJsonComments(rawConfig), EggifyConfig.class);
-            } catch (IOException exception) {
-                EggifyMod.LOGGER.error("{} Failed to read config, using defaults.", EggifyMod.LOG_PREFIX, exception);
+            } catch (IOException | JsonParseException exception) {
+                EggifyMod.LOGGER.error("{} Failed to load config, using defaults.", EggifyMod.LOG_PREFIX, exception);
             }
         }
 

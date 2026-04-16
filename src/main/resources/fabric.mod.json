@@ -28,8 +28,8 @@
     "eggify.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.18.6",
-    "minecraft": "~26.1.1",
+    "fabricloader": ">=0.19.2",
+    "minecraft": "~26.1.2",
     "java": ">=25",
     "fabric-api": "*",
     "fabric-permissions-api-v0": "*"
