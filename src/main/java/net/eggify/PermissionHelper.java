@@ -98,10 +98,6 @@ public final class PermissionHelper {
             return false;
         }
 
-        if (!canEggify(player)) {
-            return false;
-        }
-
         if (!usesLuckPermsPermissions(config)) {
             return true;
         }
