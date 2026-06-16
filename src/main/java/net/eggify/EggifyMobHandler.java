@@ -1,6 +1,6 @@
 package net.eggify;
 
-import net.minecraft.advancements.criterion.NbtPredicate;
+import net.minecraft.advancements.predicates.NbtPredicate;
 import net.eggify.config.EggifyConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -14,6 +14,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.AgeableMob;
@@ -30,6 +31,7 @@ import net.minecraft.world.entity.animal.rabbit.Rabbit;
 import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.monster.cubemob.SulfurCube;
 import net.minecraft.world.entity.monster.zombie.ZombieVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.villager.VillagerData;
@@ -37,6 +39,7 @@ import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEgg;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.SulfurCubeContent;
 import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.Level;
 
@@ -45,7 +48,7 @@ import java.util.List;
 import java.util.Locale;
 
 public final class EggifyMobHandler {
-    private static final EntityType<?> VARIANT_DATA_EXCLUDED_TYPE = EntityType.TROPICAL_FISH;
+    private static final EntityType<?> VARIANT_DATA_EXCLUDED_TYPE = EntityTypes.TROPICAL_FISH;
     private static final String[] PARROT_VARIANT_NAMES = {
         "Red Blue",
         "Blue",
@@ -158,12 +161,24 @@ public final class EggifyMobHandler {
         try {
             entityTag = sanitizeEntityDataForSpawnEgg(NbtPredicate.getEntityTagToCompare(mob));
             stack.set(DataComponents.ENTITY_DATA, TypedEntityData.of(mob.getType(), entityTag));
+            copySulfurCubeContent(mob, stack);
         } catch (Exception exception) {
             EggifyMod.LOGGER.debug("{} Failed to attach variant entity data for {}", EggifyMod.LOG_PREFIX, BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()), exception);
         }
 
         addVariantTooltip(stack, mob, entityTag);
         return stack;
+    }
+
+    private static void copySulfurCubeContent(Mob mob, ItemStack stack) {
+        if (!(mob instanceof SulfurCube sulfurCube)) {
+            return;
+        }
+
+        SulfurCubeContent content = sulfurCube.get(DataComponents.SULFUR_CUBE_CONTENT);
+        if (content != null) {
+            stack.set(DataComponents.SULFUR_CUBE_CONTENT, content);
+        }
     }
 
     private static void addVariantTooltip(ItemStack stack, Mob mob, CompoundTag entityTag) {
@@ -245,12 +260,16 @@ public final class EggifyMobHandler {
             return lines;
         }
 
+        if (mob instanceof SulfurCube) {
+            return lines;
+        }
+
         if (mob instanceof Wolf) {
             addTooltipLine(lines, "Coat", resolveVariantLabelFromEntityTag(mob, entityTag));
             return lines;
         }
 
-        if (mob.getType() == EntityType.PARROT) {
+        if (mob.getType() == EntityTypes.PARROT) {
             addTooltipLine(lines, "Color", resolveVariantLabelFromEntityTag(mob, entityTag));
             return lines;
         }
@@ -320,7 +339,7 @@ public final class EggifyMobHandler {
             return uppercaseVariant;
         }
 
-        if (mob.getType() == EntityType.PARROT) {
+        if (mob.getType() == EntityTypes.PARROT) {
             String parrotVariant = entityTag.getInt("Variant")
                 .map(EggifyMobHandler::mapParrotVariant)
                 .orElse(null);
