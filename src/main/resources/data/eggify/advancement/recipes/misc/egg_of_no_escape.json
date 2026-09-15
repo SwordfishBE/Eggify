@@ -24,7 +24,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "eggify:egg_of_no_escape"
+        "recipes": "eggify:egg_of_no_escape"
       }
     }
   },
