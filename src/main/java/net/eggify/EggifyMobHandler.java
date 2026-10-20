@@ -122,7 +122,7 @@ public final class EggifyMobHandler {
 
         EggifyConfig config = EggifyMod.CONFIG.getConfig();
         double recoveryChance = config.specialEggRecoveryChancePercent / 100.0D;
-        if (serverLevel.getRandom().nextDouble() <= recoveryChance) {
+        if (serverLevel.getRandom().nextDouble() < recoveryChance) {
             ItemStack recoveredEgg = egg.getItem().copy();
             recoveredEgg.setCount(1);
             egg.spawnAtLocation(serverLevel, recoveredEgg);
@@ -453,12 +453,23 @@ public final class EggifyMobHandler {
         sanitized.remove("SleepingX");
         sanitized.remove("SleepingY");
         sanitized.remove("SleepingZ");
+        sanitized.remove("sleeping_pos");
         sanitized.remove("Leash");
+        sanitized.remove("leash");
         sanitized.remove("Health");
         sanitized.remove("DeathTime");
         sanitized.remove("HurtTime");
         sanitized.remove("HurtByTimestamp");
         sanitized.remove("FallDistance");
+        sanitized.remove("fall_distance");
+        sanitized.remove("AbsorptionAmount");
+        sanitized.remove("invulnerable_time");
+        sanitized.remove("current_impulse_context_reset_grace_time");
+        sanitized.remove("current_explosion_impact_pos");
+        sanitized.remove("last_hurt_by_player");
+        sanitized.remove("last_hurt_by_player_memory_time");
+        sanitized.remove("last_hurt_by_mob");
+        sanitized.remove("ticks_since_last_hurt_by_mob");
         sanitized.remove("Air");
         sanitized.remove("Fire");
         sanitized.remove("OnGround");
@@ -472,6 +483,9 @@ public final class EggifyMobHandler {
         sanitized.remove("NoAI");
         sanitized.remove("Brain");
         sanitized.remove("Attributes");
+        sanitized.remove("attributes");
+        sanitized.remove("equipment");
+        sanitized.remove("drop_chances");
         sanitized.remove("ArmorItems");
         sanitized.remove("HandItems");
         sanitized.remove("HandDropChances");
@@ -488,6 +502,8 @@ public final class EggifyMobHandler {
         sanitized.remove("Owner");
         sanitized.remove("OwnerUUID");
         sanitized.remove("WanderTarget");
+        sanitized.remove("home_pos");
+        sanitized.remove("home_radius");
         sanitized.remove("PatrolTarget");
         sanitized.remove("Patrolling");
         sanitized.remove("Item");

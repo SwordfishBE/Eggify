@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "eggify-test",
+  "version": "1.0.0",
+  "name": "Eggify Regression Tests",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": ["net.eggify.EggifyGameTests"]
+  },
+  "depends": {
+    "eggify": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

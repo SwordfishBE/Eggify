@@ -2,6 +2,7 @@ package net.eggify.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public final class EggifyConfig {
     public Double dropChancePercent = null;
@@ -47,7 +48,7 @@ public final class EggifyConfig {
 
     private static List<String> sanitizeIdList(List<String> ids) {
         List<String> sanitized = ids == null ? new ArrayList<>() : new ArrayList<>(ids);
-        sanitized.replaceAll(id -> id == null ? "" : id.trim().toLowerCase());
+        sanitized.replaceAll(id -> id == null ? "" : id.trim().toLowerCase(Locale.ROOT));
         sanitized.removeIf(String::isBlank);
         return sanitized;
     }

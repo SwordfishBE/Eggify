@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonParseException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -80,7 +81,7 @@ public final class UpdateChecker {
                 } else {
                     EggifyMod.LOGGER.debug("{} No new version available. current={}, latest={}", EggifyMod.LOG_PREFIX, currentVersion.get(), latestVersionNumber);
                 }
-            } catch (IOException | InterruptedException exception) {
+            } catch (IOException | InterruptedException | JsonParseException exception) {
                 EggifyMod.LOGGER.debug("{} Update check failed: {}", EggifyMod.LOG_PREFIX, exception.getMessage());
                 if (exception instanceof InterruptedException) {
                     Thread.currentThread().interrupt();

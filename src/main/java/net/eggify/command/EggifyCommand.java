@@ -42,7 +42,13 @@ public final class EggifyCommand {
     }
 
     private static int reloadConfig(CommandSourceStack source) {
-        EggifyMod.CONFIG.load();
+        try {
+            EggifyMod.CONFIG.load();
+        } catch (IllegalStateException exception) {
+            EggifyMod.LOGGER.error("{} Config reload failed.", EggifyMod.LOG_PREFIX, exception);
+            source.sendFailure(Component.literal("Eggify config reload failed. Active settings and the file were preserved; check the server log."));
+            return 0;
+        }
         EggifyMod.LOGGER.info("{} Config reloaded via command.", EggifyMod.LOG_PREFIX);
         source.sendSuccess(() -> Component.literal("Eggify config reloaded."), true);
         return Command.SINGLE_SUCCESS;

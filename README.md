@@ -18,6 +18,7 @@ Examples:
 - `Gray Sheep` -> `Sheep Spawn Egg` with `Color: Gray`
 - `Savanna Armorer Villager` -> `Villager Spawn Egg` with biome, profession and level
 - `Screaming Goat` -> `Goat Spawn Egg` with `Type: Screaming`
+- `Sulfur Cube` with an absorbed block -> `Sulfur Cube Spawn Egg` that keeps its absorbed content
 
 ---
 
@@ -28,6 +29,7 @@ Examples:
 - LuckPerms support through fabric-permissions-api
 - Blacklist support for mobs that should never drop spawn eggs
 - Variant preservation for many mobs
+- Sulfur Cube absorbed block preservation
 - Spawn egg tooltip details such as age, color, biome, profession, coat, personality or type
 
 ---
@@ -48,7 +50,7 @@ Examples:
 Eggify supports the following permission nodes when `useLuckPerms=true`:
 
 - `eggify.use`
-  Allows the player to eggify mobs.
+  Allows the player to eggify mobs with regular thrown eggs.
 - `eggify.command`
   Allows the player to use `/eggify info` when `allowCommandPermissionNode=true`.
 - `eggify.debug`
@@ -66,6 +68,7 @@ Notes:
 - `/eggify reload` is always OP-only.
 - When `useLuckPerms=true` and LuckPerms is installed, `allowCommandPermissionNode` and `allowDebugCommand` are ignored.
 - OP players can still use the admin commands even when LuckPerms support is enabled.
+- `eggify.special.use` is independent from `eggify.use`, so servers can give special eggs as rewards without also allowing regular eggifying.
 
 ---
 
@@ -138,6 +141,7 @@ This means the mod aims to keep things like:
 - panda personality
 - parrot color
 - axolotl color
+- sulfur cube absorbed block content and its resulting archetype
 
 `Tropical Fish` is intentionally excluded from variant preservation.
 
@@ -155,7 +159,17 @@ Suggested LuckPerms examples:
 /lp user <player> permission set eggify.special.use true
 ```
 
+To disable crafting for normal users while still letting them use event reward eggs, grant only:
+
+```text
+/lp user <player> permission set eggify.special.use true
+```
+
 The `Egg of No Escape` recipe uses 8 diamonds around 1 egg. It shows up in the recipe book with its custom name, guarantees capture on a hit, and on a miss it has a 50% default chance to drop back intact instead of breaking.
+
+Craft this recipe at a crafting table. Automated Crafters reject it without consuming ingredients because crafting requires a player permission check.
+
+An invalid configuration is never automatically overwritten. A failed reload keeps the active settings; an invalid configuration at startup stops initialization until the file is repaired.
 
 Eggify can only capture mobs that have a vanilla spawn egg. For example, the Wither works, but the Ender Dragon does not because Minecraft does not provide a vanilla dragon spawn egg.
 

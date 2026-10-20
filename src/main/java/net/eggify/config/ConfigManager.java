@@ -8,30 +8,48 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ConfigManager {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("eggify.json");
+    private static final Logger LOGGER = LoggerFactory.getLogger(EggifyMod.MOD_ID);
     private static final String NEW_LINE = System.lineSeparator();
 
-    private EggifyConfig config;
+    private final Path configPath;
+    private volatile EggifyConfig config;
+
+    public ConfigManager() {
+        this(FabricLoader.getInstance().getConfigDir().resolve("eggify.json"));
+    }
+
+    ConfigManager(Path configPath) {
+        this.configPath = configPath;
+    }
 
     public EggifyConfig load() {
-        if (Files.exists(CONFIG_PATH)) {
+        boolean createFile = Files.notExists(configPath);
+        EggifyConfig loadedConfig;
+        if (!createFile) {
             try {
-                String rawConfig = Files.readString(CONFIG_PATH);
-                this.config = GSON.fromJson(stripJsonComments(rawConfig), EggifyConfig.class);
+                String rawConfig = Files.readString(configPath);
+                loadedConfig = GSON.fromJson(stripJsonComments(rawConfig), EggifyConfig.class);
+                if (loadedConfig == null) {
+                    throw new JsonParseException("Config must contain a JSON object.");
+                }
             } catch (IOException | JsonParseException exception) {
-                EggifyMod.LOGGER.error("{} Failed to load config, using defaults.", EggifyMod.LOG_PREFIX, exception);
+                throw new IllegalStateException("Cannot load Eggify config at " + configPath
+                    + ". The file and active settings have not been changed.", exception);
             }
+        } else {
+            loadedConfig = new EggifyConfig();
         }
 
-        if (this.config == null) {
-            this.config = new EggifyConfig();
+        loadedConfig.sanitize();
+        this.config = loadedConfig;
+        if (createFile) {
+            this.save();
         }
-
-        this.config.sanitize();
-        this.save();
         return this.config;
     }
 
@@ -49,18 +67,19 @@ public final class ConfigManager {
     }
 
     public EggifyConfig applyEditedConfig(EggifyConfig editedConfig) {
-        this.config = editedConfig == null ? new EggifyConfig() : editedConfig;
-        this.config.sanitize();
+        EggifyConfig updatedConfig = editedConfig == null ? new EggifyConfig() : editedConfig;
+        updatedConfig.sanitize();
+        this.config = updatedConfig;
         this.save();
         return this.config;
     }
 
     public void save() {
         try {
-            Files.createDirectories(CONFIG_PATH.getParent());
-            Files.writeString(CONFIG_PATH, writeConfigWithComments(this.getConfig()));
+            Files.createDirectories(configPath.toAbsolutePath().getParent());
+            Files.writeString(configPath, writeConfigWithComments(this.getConfig()));
         } catch (IOException exception) {
-            EggifyMod.LOGGER.error("{} Failed to write config.", EggifyMod.LOG_PREFIX, exception);
+            LOGGER.error("[Eggify] Failed to write config.", exception);
         }
     }
 
@@ -183,6 +202,7 @@ public final class ConfigManager {
 
             if (current == '/' && next == '*') {
                 blockComment = true;
+                result.append(' ');
                 index++;
                 continue;
             }
@@ -190,6 +210,9 @@ public final class ConfigManager {
             result.append(current);
         }
 
+        if (blockComment) {
+            throw new JsonParseException("Unterminated block comment.");
+        }
         return result.toString();
     }
 }
