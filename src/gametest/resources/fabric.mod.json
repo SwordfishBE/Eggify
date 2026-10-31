@@ -5,7 +5,7 @@
   "name": "Eggify Regression Tests",
   "environment": "*",
   "entrypoints": {
-    "fabric-gametest": ["net.eggify.EggifyGameTests"]
+    "fabric-gametest": ["net.eggify.EggifyGameTests", "net.eggify.EggifyCompatibilityTests", "net.eggify.EggifySnapshotTests"]
   },
   "depends": {
     "eggify": "*",

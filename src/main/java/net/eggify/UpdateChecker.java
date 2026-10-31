@@ -17,10 +17,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
+import net.minecraft.SharedConstants;
 
 public final class UpdateChecker {
     private static final String PROJECT_ID = "kOkcRRPb";
-    private static final String MINECRAFT_MOD_ID = "minecraft";
     private static final String FABRIC_LOADER = "fabric";
     private static final String RELEASE = "release";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
@@ -97,8 +97,8 @@ public final class UpdateChecker {
     }
 
     private static Optional<String> currentMinecraftVersion() {
-        return FabricLoader.getInstance().getModContainer(MINECRAFT_MOD_ID)
-            .map(container -> container.getMetadata().getVersion().getFriendlyString())
+        // Modrinth uses raw snapshot IDs rather than Loader's normalized alpha versions.
+        return Optional.of(SharedConstants.getCurrentVersion().id())
             .filter(version -> !version.isBlank());
     }
 

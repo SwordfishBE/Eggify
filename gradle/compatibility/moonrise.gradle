@@ -1,0 +1,10 @@
+allprojects {
+    afterEvaluate {
+        if (project.hasProperty('compatJar')) {
+            dependencies.add('gametestRuntimeOnly', files(project.property('compatJar')))
+            tasks.named('runGameTest', JavaExec) {
+                jvmArgs '-Deggify.compat.expectedMoonrise=1.2.1+e53de7f'
+            }
+        }
+    }
+}
